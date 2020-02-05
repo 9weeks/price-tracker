@@ -5,9 +5,12 @@
  *
  */
 
-import React from 'react';
+import React, { useEffect, memo } from 'react';
+import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
 
 import {
   LineChart,
@@ -17,24 +20,46 @@ import {
   YAxis,
   Tooltip,
 } from 'recharts';
+import { createStructuredSelector } from 'reselect';
+import { useInjectReducer } from 'utils/injectReducer';
+import { useInjectSaga } from 'utils/injectSaga';
+import {
+  makeSelectRepos,
+  makeSelectLoading,
+  makeSelectError,
+} from 'containers/App/selectors';
+
+import { makeSelectorPID } from './selectors';
+
+import reducer from './reducer';
+import saga from './saga';
 
 import messages from './messages';
+import { loadRepos } from '../App/actions';
 
-const data = [
-  { name: 'Page A', uv: 400, pv: 2400, amt: 2400 },
-  { name: 'Page B', uv: 200, pv: 2400, amt: 2400 },
-  { name: 'Page C', uv: 700, pv: 2400, amt: 2400 },
-];
+const key = 'traker';
 
-export default function Traker() {
+export function Tracker({ repos, pid, onClickPrice }) {
+  useInjectReducer({ key, reducer });
+  useInjectSaga({ key, saga });
+
+  useEffect(() => {
+    // When initial state username is not null, submit the form to load repos
+    if (pid && pid.trim().length > 0) onClickPrice('cj-bibigo-dumpling');
+  }, []);
   return (
     <div>
+      <Example onClick={() => onClickPrice('cj-bibigo-dumpling')}>
+        cj-bibigo-dumpling
+      </Example>
+      <Example>cj bingo2</Example>
       <Gnb>
         <Title>
           <FormattedMessage {...messages.header} />
         </Title>
         <More>more</More>
       </Gnb>
+
       <Lowlike>
         <Low>
           <FormattedMessage {...messages.lowestprice} />
@@ -43,11 +68,12 @@ export default function Traker() {
           <FormattedMessage {...messages.like} />
         </Like>
       </Lowlike>
+
       <Chart>
         <LineChart
           width={600}
           height={300}
-          data={data}
+          data={repos}
           margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
         >
           <Line type="monotone" dataKey="uv" stroke="#8884d8" />
@@ -60,6 +86,48 @@ export default function Traker() {
     </div>
   );
 }
+
+Tracker.propTypes = {
+  loading: PropTypes.bool,
+  error: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
+  repos: PropTypes.oneOfType([PropTypes.array, PropTypes.bool]),
+  onClickPrice: PropTypes.func,
+  pid: PropTypes.string,
+};
+
+const mapStateToProps = createStructuredSelector({
+  repos: makeSelectRepos(),
+  pid: makeSelectorPID(),
+  loading: makeSelectLoading(),
+  error: makeSelectError(),
+});
+
+export function mapDispatchToProps(dispatch) {
+  return {
+    onClickPrice: evt => {
+      if (evt !== undefined && evt.preventDefault) evt.preventDefault();
+      dispatch(loadRepos());
+    },
+  };
+}
+
+const withConnect = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+);
+
+export default compose(
+  withConnect,
+  memo,
+)(Tracker);
+
+const Example = styled.div`
+  padding: 10px;
+  display: inline-block;
+  text-align: left;
+  cursor: pointer;
+  color: silver;
+`;
 
 const Chart = styled.div`
   width: 610px;
@@ -112,10 +180,17 @@ const Title = styled.div`
 `;
 
 const More = styled.div`
+  font-size: 9pt;
   padding: 1px;
   min-width: 120px;
   text-align: right;
   float: right;
-  margin-top: 13px;
+  margin-top: 17px;
   margin-right: 10px;
+  -webkit-appearance: none;
+  cursor: pointer;
+  &:active,
+  &:focus {
+    outline: none;
+  }
 `;
