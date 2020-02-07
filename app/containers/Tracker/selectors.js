@@ -5,12 +5,18 @@
 import { createSelector } from 'reselect';
 import { initialState } from './reducer';
 
-const selectTracker = state => state.tracker || initialState;
+const selectTracker = state => state.PriceTracker || initialState;
 
 const makeSelectorPID = () =>
   createSelector(
     selectTracker,
-    trackerState => trackerState.pid,
+    PriceTrackerState => PriceTrackerState.pid,
   );
 
-export { selectTracker, makeSelectorPID };
+const makeSelectorOpt = () =>
+  createSelector(
+    selectTracker,
+    PriceTrackerState => PriceTrackerState.opt,
+  );
+
+export { selectTracker, makeSelectorPID, makeSelectorOpt };

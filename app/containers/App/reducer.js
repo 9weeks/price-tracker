@@ -17,13 +17,14 @@ export const initialState = {
   currentUser: false,
   userData: {
     repositories: false,
+    pid: '',
+    opt: '',
   },
 };
 
 /* eslint-disable default-case, no-param-reassign */
 const appReducer = (state = initialState, action) =>
   produce(state, draft => {
-    console.log('appReducer');
     switch (action.type) {
       case LOAD_REPOS:
         draft.loading = true;
@@ -35,6 +36,9 @@ const appReducer = (state = initialState, action) =>
         draft.userData.repositories = action.repos;
         draft.loading = false;
         draft.currentUser = action.username;
+        draft.pid = action.repos.pid;
+        draft.opt = action.repos.opt;
+
         break;
 
       case LOAD_REPOS_ERROR:

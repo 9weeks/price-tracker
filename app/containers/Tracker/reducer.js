@@ -8,22 +8,25 @@
  */
 
 import produce from 'immer';
-import { PRICE_DATA } from './constants';
+import { LOAD_REPOS_SUCCESS } from '../App/constants';
 
 // The initial state of the App
 export const initialState = {
+  repos: false,
   pid: '',
+  opt: '',
 };
 
 /* eslint-disable default-case, no-param-reassign */
 const trakerReducer = (state = initialState, action) =>
   produce(state, draft => {
-    console.log('reducer type', action.type, action.repos);
-
     switch (action.type) {
-      case PRICE_DATA:
+      case LOAD_REPOS_SUCCESS:
         // Delete prefixed '@' from the github username
-        draft.pid = action.pid;
+
+        draft.repos = action.repos;
+        draft.pid = action.repos.pid;
+        draft.opt = action.repos.opt;
         break;
     }
   });

@@ -7,22 +7,21 @@ import { LOAD_REPOS } from 'containers/App/constants';
 import { reposLoaded, repoLoadingError } from 'containers/App/actions';
 
 import request from 'utils/request';
-import { makeSelectorPID } from 'containers/Tracker/selectors';
+import { makeSelectorPID, makeSelectorOpt } from './selectors';
 
 /**
  * Github repos request/response handler
  */
 export function* getRepos() {
-  const priceData = '';
   // Select username from store
   const pid = yield select(makeSelectorPID());
-  console.log('saga > getRepos', pid);
+  const opt = yield select(makeSelectorOpt());
 
-  const requestURL = `http://localhost:3000/api/product/${pid}}`;
+  const requestURL = `http://localhost:3000/api/product?pid=${pid}&opt={opt}`;
   try {
     // Call our request helper (see 'utils/request')
     const repos = yield call(request, requestURL);
-    yield put(reposLoaded(repos, priceData));
+    yield put(reposLoaded(repos, pid, opt));
   } catch (err) {
     yield put(repoLoadingError(err));
   }

@@ -22,7 +22,7 @@ export default function App() {
     <div>
       <Switch>
         <Route exact path="/" component={HomePage} />
-        <Route exact path="/Tracker" component={Tracker} />
+        <Route exact path="/Tracker/:pid/:opt" component={Tracker} />
 
         <Route component={NotFoundPage} />
       </Switch>

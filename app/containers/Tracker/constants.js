@@ -10,3 +10,4 @@
  */
 
 export const PRICE_DATA = 'pricetracker/PRICE_DATA';
+export const DEFAULT_ACTION = 'pricetracker/DEFAULT_ACTION';

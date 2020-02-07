@@ -24,7 +24,7 @@ import { PRICE_DATA } from './constants';
  *
  * @return {object} An action object with a type of CHANGE_USERNAME
  */
-export function getProductPrice(pid) {
+export default function getProductPrice(pid) {
   return {
     type: PRICE_DATA,
     pid,

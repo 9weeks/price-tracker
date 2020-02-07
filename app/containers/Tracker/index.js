@@ -1,15 +1,14 @@
-/*
- * HomePage
+/**
  *
- * This is the first thing users see of our App, at the '/' route
+ * PriceTracker
  *
  */
 
 import React, { useEffect, memo } from 'react';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
-import styled from 'styled-components';
 import { connect } from 'react-redux';
+import { FormattedMessage } from 'react-intl';
+import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
 
 import {
@@ -20,39 +19,34 @@ import {
   YAxis,
   Tooltip,
 } from 'recharts';
-import { createStructuredSelector } from 'reselect';
-import { useInjectReducer } from 'utils/injectReducer';
-import { useInjectSaga } from 'utils/injectSaga';
 import {
   makeSelectRepos,
   makeSelectLoading,
   makeSelectError,
 } from 'containers/App/selectors';
 
-import { makeSelectorPID } from './selectors';
+import styled from 'styled-components';
+import { useInjectSaga } from 'utils/injectSaga';
+import { useInjectReducer } from 'utils/injectReducer';
+
+import { makeSelectorPID, makeSelectorOpt } from './selectors';
 
 import reducer from './reducer';
 import saga from './saga';
-
 import messages from './messages';
 import { loadRepos } from '../App/actions';
 
-const key = 'traker';
-
-export function Tracker({ repos, pid, onClickPrice }) {
-  useInjectReducer({ key, reducer });
-  useInjectSaga({ key, saga });
+export function PriceTracker({ repos, onLoad, pid, opt }) {
+  useInjectReducer({ key: 'PriceTracker', reducer });
+  useInjectSaga({ key: 'PriceTracker', saga });
 
   useEffect(() => {
     // When initial state username is not null, submit the form to load repos
-    if (pid && pid.trim().length > 0) onClickPrice('cj-bibigo-dumpling');
+    onLoad(pid, opt);
   }, []);
+
   return (
     <div>
-      <Example onClick={() => onClickPrice('cj-bibigo-dumpling')}>
-        cj-bibigo-dumpling
-      </Example>
-      <Example>cj bingo2</Example>
       <Gnb>
         <Title>
           <FormattedMessage {...messages.header} />
@@ -73,10 +67,10 @@ export function Tracker({ repos, pid, onClickPrice }) {
         <LineChart
           width={600}
           height={300}
-          data={repos}
+          data={repos.prices}
           margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
         >
-          <Line type="monotone" dataKey="uv" stroke="#8884d8" />
+          <Line type="monotone" dataKey="price" stroke="#8884d8" />
           <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
           <XAxis dataKey="name" />
           <YAxis />
@@ -87,26 +81,27 @@ export function Tracker({ repos, pid, onClickPrice }) {
   );
 }
 
-Tracker.propTypes = {
+PriceTracker.propTypes = {
   loading: PropTypes.bool,
   error: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
   repos: PropTypes.oneOfType([PropTypes.array, PropTypes.bool]),
-  onClickPrice: PropTypes.func,
+  onLoad: PropTypes.func,
   pid: PropTypes.string,
+  opt: PropTypes.string,
 };
 
 const mapStateToProps = createStructuredSelector({
   repos: makeSelectRepos(),
   pid: makeSelectorPID(),
+  opt: makeSelectorOpt(),
   loading: makeSelectLoading(),
   error: makeSelectError(),
 });
 
-export function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch) {
   return {
-    onClickPrice: evt => {
-      if (evt !== undefined && evt.preventDefault) evt.preventDefault();
-      dispatch(loadRepos());
+    onLoad: (pid, opt) => {
+      dispatch(loadRepos(pid, opt));
     },
   };
 }
@@ -119,15 +114,7 @@ const withConnect = connect(
 export default compose(
   withConnect,
   memo,
-)(Tracker);
-
-const Example = styled.div`
-  padding: 10px;
-  display: inline-block;
-  text-align: left;
-  cursor: pointer;
-  color: silver;
-`;
+)(PriceTracker);
 
 const Chart = styled.div`
   width: 610px;
