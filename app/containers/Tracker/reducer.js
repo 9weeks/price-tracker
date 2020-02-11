@@ -8,7 +8,7 @@
  */
 
 import produce from 'immer';
-import { LOAD_REPOS_SUCCESS } from '../App/constants';
+import { PRICE_DATA, LOAD_REPOS, LOAD_REPOS_SUCCESS } from './constants';
 
 // The initial state of the App
 export const initialState = {
@@ -21,12 +21,20 @@ export const initialState = {
 const trakerReducer = (state = initialState, action) =>
   produce(state, draft => {
     switch (action.type) {
-      case LOAD_REPOS_SUCCESS:
+      case PRICE_DATA:
         // Delete prefixed '@' from the github username
+        draft.pid = action.pid;
+        draft.opt = action.opt;
+        break;
+      case LOAD_REPOS:
+        draft.repos = false;
+        break;
 
+      case LOAD_REPOS_SUCCESS:
         draft.repos = action.repos;
-        draft.pid = action.repos.pid;
-        draft.opt = action.repos.opt;
+        draft.pid = action.pid;
+        draft.opt = action.opt;
+
         break;
     }
   });

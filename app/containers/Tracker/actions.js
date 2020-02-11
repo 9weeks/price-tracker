@@ -15,7 +15,7 @@
  *    }
  */
 
-import { PRICE_DATA } from './constants';
+import { LOAD_REPOS_SUCCESS, PRICE_DATA } from './constants';
 
 /**
  * Changes the input field of the form
@@ -24,9 +24,20 @@ import { PRICE_DATA } from './constants';
  *
  * @return {object} An action object with a type of CHANGE_USERNAME
  */
-export default function getProductPrice(pid) {
+
+export function reposLoaded(repos, pid, opt) {
+  return {
+    type: LOAD_REPOS_SUCCESS,
+    repos,
+    pid,
+    opt,
+  };
+}
+
+export function Load(pid, opt) {
   return {
     type: PRICE_DATA,
     pid,
+    opt,
   };
 }

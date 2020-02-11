@@ -11,3 +11,5 @@
 
 export const PRICE_DATA = 'pricetracker/PRICE_DATA';
 export const DEFAULT_ACTION = 'pricetracker/DEFAULT_ACTION';
+export const LOAD_REPOS = 'pricetracker/LOAD_REPOS';
+export const LOAD_REPOS_SUCCESS = 'pricetracker/LOAD_REPOS_SUCCESS';

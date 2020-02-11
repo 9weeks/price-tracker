@@ -19,32 +19,25 @@ import {
   YAxis,
   Tooltip,
 } from 'recharts';
-import {
-  makeSelectRepos,
-  makeSelectLoading,
-  makeSelectError,
-} from 'containers/App/selectors';
 
 import styled from 'styled-components';
 import { useInjectSaga } from 'utils/injectSaga';
 import { useInjectReducer } from 'utils/injectReducer';
+import queryString from 'query-string';
 
-import { makeSelectorPID, makeSelectorOpt } from './selectors';
+import { makeSelectorPID, makeSelectorOpt, makeSelectRepos } from './selectors';
 
 import reducer from './reducer';
 import saga from './saga';
 import messages from './messages';
-import { loadRepos } from '../App/actions';
+import { Load } from './actions';
 
-export function PriceTracker({ repos, onLoad, pid, opt }) {
+export function PriceTracker({ repos, onLoad, location }) {
   useInjectReducer({ key: 'PriceTracker', reducer });
   useInjectSaga({ key: 'PriceTracker', saga });
+  const { pid, opt } = queryString.parse(location.search);
 
-  useEffect(() => {
-    // When initial state username is not null, submit the form to load repos
-    onLoad(pid, opt);
-  }, []);
-
+  useEffect(() => onLoad(pid, opt), []);
   return (
     <div>
       <Gnb>
@@ -85,23 +78,23 @@ PriceTracker.propTypes = {
   loading: PropTypes.bool,
   error: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
   repos: PropTypes.oneOfType([PropTypes.array, PropTypes.bool]),
+  location: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
   onLoad: PropTypes.func,
   pid: PropTypes.string,
   opt: PropTypes.string,
+  match: PropTypes.oneOfType([PropTypes.array, PropTypes.bool]),
 };
 
 const mapStateToProps = createStructuredSelector({
   repos: makeSelectRepos(),
   pid: makeSelectorPID(),
   opt: makeSelectorOpt(),
-  loading: makeSelectLoading(),
-  error: makeSelectError(),
 });
 
 function mapDispatchToProps(dispatch) {
   return {
     onLoad: (pid, opt) => {
-      dispatch(loadRepos(pid, opt));
+      dispatch(Load(pid, opt));
     },
   };
 }

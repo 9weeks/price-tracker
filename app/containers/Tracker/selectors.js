@@ -19,4 +19,10 @@ const makeSelectorOpt = () =>
     PriceTrackerState => PriceTrackerState.opt,
   );
 
-export { selectTracker, makeSelectorPID, makeSelectorOpt };
+const makeSelectRepos = () =>
+  createSelector(
+    selectTracker,
+    PriceTrackerState => PriceTrackerState.repos,
+  );
+
+export { selectTracker, makeSelectorPID, makeSelectorOpt, makeSelectRepos };
